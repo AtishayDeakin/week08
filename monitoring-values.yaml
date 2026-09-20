@@ -1,0 +1,36 @@
+grafana:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 200Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+  service:
+    type: ClusterIP 
+
+prometheus:
+  prometheusSpec:
+    resources:
+      requests:
+        cpu: 150m
+        memory: 256Mi
+      limits:
+        cpu: 300m
+        memory: 512Mi
+    retention: 1d          # short retention - keeps storage small for this task
+
+alertmanager:
+  enabled: false            # not needed for this task, saves resources
+
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 32Mi
+
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
