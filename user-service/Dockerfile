@@ -1,17 +1,21 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
 WORKDIR /app
 
 COPY requirements.txt .
+
+RUN apk add --no-cache --virtual .build-deps gcc musl-dev libffi-dev postgresql-dev
 
 RUN pip install \
     --no-cache-dir \
     --root-user-action=ignore \
     -r requirements.txt
 
+RUN apk del .build-deps
+
 COPY . .
 
-RUN useradd -m appuser
+RUN adduser -D appuser
 RUN chown -R appuser:appuser /app
 
 USER appuser
