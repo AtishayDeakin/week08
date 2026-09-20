@@ -144,8 +144,34 @@ jobs:
             -n staging \
             --timeout=300s
 
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Add Prometheus Helm repo
+        run: |
+          helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+          helm repo update
+
+      - name: Create monitoring namespace
+        run: |
+          kubectl create namespace monitoring \
+            --dry-run=client \
+            -o yaml | kubectl apply -f -
+
+      - name: Deploy monitoring stack
+        run: |
+          helm upgrade --install monitoring prometheus-community/kube-prometheus-stack \
+            --namespace monitoring \
+            -f monitoring-values.yaml \
+            --wait --timeout 5m
+
       - name: Show staging resources
         run: |
           kubectl get pods -n staging
           kubectl get services -n staging
           kubectl get pvc -n staging
+
+      - name: Show monitoring resources
+        run: |
+          kubectl get pods -n monitoring
+          kubectl get svc -n monitoring
